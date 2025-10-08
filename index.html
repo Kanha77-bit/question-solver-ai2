@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Question Solver AI</title>
+<style>
+body { font-family: Arial, sans-serif; background: linear-gradient(to right,#8e2de2,#4a00e0); color:white; text-align:center; padding:20px;}
+.container {background:rgba(255,255,255,0.1); padding:20px; border-radius:15px; max-width:500px; margin:auto;}
+input,textarea,button{width:100%;padding:10px;margin:8px 0;border:none;border-radius:8px;font-size:16px;}
+button{background:#4a00e0;color:white;cursor:pointer;font-weight:bold;}
+button:hover{background:#6a11cb;}
+#output{background:rgba(255,255,255,0.2);padding:10px;border-radius:10px;text-align:left;white-space:pre-wrap;}
+</style>
+</head>
+<body>
+<div class="container">
+<h2>📚 Question Solver AI</h2>
+<p>Ask anything from Hindi, English, Maths, Science, SST & more!</p>
+
+<input type="text" id="email" placeholder="Enter your email to login" />
+<input type="password" id="password" placeholder="Enter password" />
+<button onclick="login()">Login / Signup</button>
+
+<textarea id="question" placeholder="Type your question here..."></textarea>
+<input type="file" id="imageInput" accept="image/*" />
+<button onclick="solveQuestion()">Ask AI</button>
+
+<h3>Answer:</h3>
+<div id="output"></div>
+</div>
+
+<script>
+async function login(){
+  const email=document.getElementById("email").value;
+  const password=document.getElementById("password").value;
+  if(!email||!password){alert("Enter both email and password!");return;}
+  localStorage.setItem("user",JSON.stringify({email}));
+  alert("✅ Logged in as "+email);
+}
+
+async function solveQuestion(){
+  const question=document.getElementById("question").value;
+  const file=document.getElementById("imageInput").files[0];
+  const output=document.getElementById("output");
+  if(!question&&!file){alert("Type a question or upload an image!"); return;}
+  const formData=new FormData();
+  formData.append("question",question);
+  if(file) formData.append("image",file);
+
+  output.innerHTML="⏳ Thinking...";
+  const res=await fetch("/ask",{method:"POST",body:formData});
+  const data=await res.json();
+  output.innerHTML=data.answer||"No response.";
+}
+</script>
+</body>
+</html>
